@@ -1,40 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}Feed - Instagram Clone{% endblock %}
+{% block title %}Feed - Vibesphere{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <!-- Create Post Card -->
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <a href="{{ url_for('create_post') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Create New Post
-                    </a>
+            <!-- Welcome Card -->
+            <div class="card vibe-card mb-4 border-0">
+                <div class="card-body text-center py-4">
+                    <h3 class="text-primary">Welcome to Vibesphere! 🌟</h3>
+                    <p class="text-muted mb-0">Share your vibes, boost others, and join the conversation</p>
                 </div>
             </div>
 
-            <!-- Posts Feed -->
+            <!-- Create Vibe Card -->
+            <div class="card vibe-card mb-4">
+                <div class="card-body text-center">
+                    <a href="{{ url_for('create_post') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create New Vibe
+                    </a>
+                    <p class="text-muted mt-2 mb-0">Share your moment with the community</p>
+                </div>
+            </div>
+
+            <!-- Vibes Feed -->
             {% for post in posts %}
-            <div class="card mb-4">
-                <!-- Post Header -->
-                <div class="card-header bg-white">
+            <div class="card vibe-card mb-4">
+                <!-- Vibe Header -->
+                <div class="card-header bg-white border-0 pb-0">
                     <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width: 40px; height: 40px;">
+                            <span class="text-white fw-bold">{{ post.username[0]|upper }}</span>
+                        </div>
                         <div class="flex-grow-1">
-                            <h6 class="mb-0">{{ post.username }}</h6>
-                            <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            <h6 class="mb-0 fw-bold">{{ post.username }}</h6>
+                            <small class="text-muted">{{ post.created_at.strftime('%b %d at %H:%M') }}</small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Post Media -->
+                <!-- Vibe Media -->
                 <div class="card-body p-0">
                     {% if post.image_url %}
                     <img src="{{ url_for('static', filename=post.image_url) }}" 
                          class="card-img-top" 
-                         alt="Post image"
-                         style="max-height: 500px; object-fit: cover;">
+                         alt="Vibe image"
+                         style="max-height: 500px; object-fit: cover; cursor: pointer;"
+                         onclick="this.style.transform = this.style.transform === 'scale(1.5)' ? 'scale(1)' : 'scale(1.5)'; this.style.transition = 'transform 0.3s ease';">
                     {% elif post.video_url %}
                     <video controls class="card-img-top" style="max-height: 500px;">
                         <source src="{{ url_for('static', filename=post.video_url) }}" type="video/mp4">
@@ -43,64 +57,73 @@
                     {% endif %}
                 </div>
 
-                <!-- Post Actions -->
+                <!-- Vibe Actions -->
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <div>
-                            <button class="btn btn-outline-danger like-btn {% if post.user_liked %}liked{% endif %}" 
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex gap-3">
+                            <button class="btn btn-outline-warning boost-btn {% if post.user_liked %}boosted{% endif %}" 
                                     data-post-id="{{ post.id }}">
-                                <i class="fas fa-heart {% if post.user_liked %}text-danger{% endif %}"></i>
-                                <span class="like-count">{{ post.like_count }}</span>
+                                <i class="fas fa-rocket {% if post.user_liked %}text-warning{% endif %}"></i>
+                                <span class="boost-count ms-1">{{ post.like_count }}</span>
+                                <span class="ms-1">Boost</span>
+                            </button>
+                            
+                            <button class="btn btn-outline-primary" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#commentary-{{ post.id }}">
+                                <i class="fas fa-comment"></i>
+                                <span class="ms-1">{{ post.comment_count }} Commentary</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Caption -->
                     {% if post.caption %}
-                    <p class="card-text">
+                    <p class="card-text vibe-caption">
                         <strong>{{ post.username }}</strong> {{ post.caption }}
                     </p>
                     {% endif %}
 
-                    <!-- Comments Section -->
-                    <div class="comments-section">
+                    <!-- Commentary Section -->
+                    <div class="commentary-section mt-3">
                         {% if post.comment_count > 0 %}
-                        <button class="btn btn-link p-0 text-muted view-comments" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target="#comments-{{ post.id }}">
-                            View all {{ post.comment_count }} comments
-                        </button>
-                        {% endif %}
-
-                        <div class="collapse" id="comments-{{ post.id }}">
+                        <div class="collapse show" id="commentary-{{ post.id }}">
                             {% for comment in post.comments %}
-                            <div class="comment mb-2">
-                                <strong>{{ comment.username }}</strong> 
-                                <span>{{ comment.comment_text }}</span>
-                                <br>
-                                <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            <div class="commentary-item mb-2 p-2 bg-light rounded">
+                                <div class="d-flex align-items-start">
+                                    <strong class="me-2">{{ comment.username }}</strong>
+                                    <span class="flex-grow-1">{{ comment.comment_text }}</span>
+                                </div>
+                                <small class="text-muted">{{ comment.created_at.strftime('%H:%M') }}</small>
                             </div>
                             {% endfor %}
                         </div>
+                        {% endif %}
 
-                        <!-- Add Comment Form -->
-                        <form class="add-comment-form mt-2" data-post-id="{{ post.id }}">
+                        <!-- Add Commentary Form -->
+                        <form class="add-commentary-form mt-2" data-post-id="{{ post.id }}">
                             <div class="input-group">
                                 <input type="text" 
                                        class="form-control" 
-                                       placeholder="Add a comment..." 
+                                       placeholder="Add your commentary..." 
                                        required>
-                                <button class="btn btn-primary" type="submit">Post</button>
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
             {% else %}
-            <div class="text-center">
-                <h4>No posts yet</h4>
-                <p>Be the first to create a post!</p>
-                <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create Post</a>
+            <!-- Empty State -->
+            <div class="card vibe-card text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-wind fa-3x text-muted mb-3"></i>
+                    <h4>No vibes yet</h4>
+                    <p class="text-muted">Be the first to share a vibe and start the energy flow!</p>
+                    <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create First Vibe</a>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -108,30 +131,30 @@
 </div>
 
 <script>
-// Like functionality
-document.querySelectorAll('.like-btn').forEach(button => {
+// Boost functionality
+document.querySelectorAll('.boost-btn').forEach(button => {
     button.addEventListener('click', function() {
         const postId = this.getAttribute('data-post-id');
-        likePost(postId, this);
+        boostVibe(postId, this);
     });
 });
 
-// Comment functionality
-document.querySelectorAll('.add-comment-form').forEach(form => {
+// Commentary functionality
+document.querySelectorAll('.add-commentary-form').forEach(form => {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         const postId = this.getAttribute('data-post-id');
-        const commentInput = this.querySelector('input');
-        const commentText = commentInput.value.trim();
+        const commentaryInput = this.querySelector('input');
+        const commentaryText = commentaryInput.value.trim();
         
-        if (commentText) {
-            addComment(postId, commentText, this);
-            commentInput.value = '';
+        if (commentaryText) {
+            addCommentary(postId, commentaryText, this);
+            commentaryInput.value = '';
         }
     });
 });
 
-function likePost(postId, button) {
+function boostVibe(postId, button) {
     fetch(`/like_post/${postId}`, {
         method: 'POST',
         headers: {
@@ -143,26 +166,29 @@ function likePost(postId, button) {
         if (data.error) {
             alert(data.error);
         } else {
-            const heartIcon = button.querySelector('.fas');
-            const likeCount = button.querySelector('.like-count');
+            const rocketIcon = button.querySelector('.fas');
+            const boostCount = button.querySelector('.boost-count');
             
             if (data.action === 'liked') {
-                heartIcon.classList.add('text-danger');
-                button.classList.add('liked');
+                rocketIcon.classList.add('text-warning');
+                button.classList.add('boosted');
+                // Add animation effect
+                button.style.transform = 'scale(1.1)';
+                setTimeout(() => { button.style.transform = 'scale(1)'; }, 200);
             } else {
-                heartIcon.classList.remove('text-danger');
-                button.classList.remove('liked');
+                rocketIcon.classList.remove('text-warning');
+                button.classList.remove('boosted');
             }
             
-            likeCount.textContent = data.like_count;
+            boostCount.textContent = data.like_count;
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
-function addComment(postId, commentText, form) {
+function addCommentary(postId, commentaryText, form) {
     const formData = new FormData();
-    formData.append('comment_text', commentText);
+    formData.append('comment_text', commentaryText);
     
     fetch(`/comment_post/${postId}`, {
         method: 'POST',
@@ -173,42 +199,58 @@ function addComment(postId, commentText, form) {
         if (data.error) {
             alert(data.error);
         } else if (data.success) {
-            // Add new comment to the comments section
-            const commentsSection = form.closest('.comments-section');
-            const commentsCollapse = commentsSection.querySelector('.collapse');
+            // Add new commentary to the section
+            const commentarySection = form.closest('.commentary-section');
+            const commentaryCollapse = commentarySection.querySelector('.collapse');
             
-            const newComment = document.createElement('div');
-            newComment.className = 'comment mb-2';
-            newComment.innerHTML = `
-                <strong>${data.comment.username}</strong> 
-                <span>${data.comment.comment_text}</span>
-                <br>
+            const newCommentary = document.createElement('div');
+            newCommentary.className = 'commentary-item mb-2 p-2 bg-light rounded';
+            newCommentary.innerHTML = `
+                <div class="d-flex align-items-start">
+                    <strong class="me-2">${data.comment.username}</strong>
+                    <span class="flex-grow-1">${data.comment.comment_text}</span>
+                </div>
                 <small class="text-muted">${data.comment.created_at}</small>
             `;
             
-            if (commentsCollapse) {
-                commentsCollapse.appendChild(newComment);
+            if (commentaryCollapse) {
+                commentaryCollapse.appendChild(newCommentary);
             }
             
-            // Update comment count
-            const viewCommentsBtn = commentsSection.querySelector('.view-comments');
-            if (viewCommentsBtn) {
-                const currentCount = parseInt(viewCommentsBtn.textContent.match(/\d+/)[0]);
-                viewCommentsBtn.textContent = `View all ${currentCount + 1} comments`;
+            // Update commentary count
+            const commentaryBtn = commentarySection.previousElementSibling.querySelector('.btn-outline-primary');
+            if (commentaryBtn) {
+                const currentCount = parseInt(commentaryBtn.textContent.match(/\d+/)[0] || 0);
+                commentaryBtn.innerHTML = `<i class="fas fa-comment"></i><span class="ms-1">${currentCount + 1} Commentary</span>`;
             }
         }
     })
     .catch(error => console.error('Error:', error));
 }
+
+// Image zoom effect
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('card-img-top')) {
+        e.target.style.zIndex = e.target.style.zIndex === '1000' ? '1' : '1000';
+        e.target.style.position = e.target.style.position === 'relative' ? 'static' : 'relative';
+    }
+});
 </script>
 
 <style>
-.like-btn.liked {
-    background-color: #ffebee;
+.boost-btn.boosted {
+    background-color: rgba(255, 193, 7, 0.1);
 }
-.comment {
-    border-left: 2px solid #007bff;
-    padding-left: 10px;
+.vibe-caption {
+    font-size: 1.1em;
+    line-height: 1.4;
+}
+.commentary-item {
+    border-left: 3px solid #007bff;
+}
+.card-img-top {
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
 }
 </style>
 {% endblock %}
