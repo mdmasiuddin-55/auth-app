@@ -1,47 +1,61 @@
 {% extends "base.html" %}
 
-{% block title %}Profile - Instagram Clone{% endblock %}
+{% block title %}Profile - Vibesphere{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <!-- Profile Header -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-3 text-center">
-                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 100px; height: 100px;">
-                                <span class="text-white display-6">{{ user.username[0]|upper }}</span>
-                            </div>
+            <div class="card vibe-card mb-4">
+                <div class="card-body text-center py-4">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 100px; height: 100px;">
+                        <span class="text-white display-6 fw-bold">{{ user.username[0]|upper }}</span>
+                    </div>
+                    <h3 class="text-primary">{{ user.username }}</h3>
+                    <p class="text-muted mb-2">{{ user.email }}</p>
+                    <p class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Joined {{ user.created_at.strftime('%B %Y') }}
+                    </p>
+                    <div class="d-flex justify-content-center gap-4 mt-3">
+                        <div class="text-center">
+                            <div class="h4 mb-0 text-primary">{{ posts|length }}</div>
+                            <small class="text-muted">Vibes</small>
                         </div>
-                        <div class="col-md-9">
-                            <h3>{{ user.username }}</h3>
-                            <p class="text-muted">{{ user.email }}</p>
-                            <p class="text-muted">Member since: {{ user.created_at.strftime('%B %Y') }}</p>
-                            <div class="d-flex gap-3">
-                                <span><strong>{{ posts|length }}</strong> posts</span>
+                        <div class="text-center">
+                            <div class="h4 mb-0 text-warning">
+                                {{ posts|sum(attribute='like_count') }}
                             </div>
+                            <small class="text-muted">Total Boosts</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- User's Posts -->
-            <h4 class="mb-3">Your Posts</h4>
+            <!-- User's Vibes -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-primary">
+                    <i class="fas fa-spa me-2"></i>Your Vibes
+                </h4>
+                <a href="{{ url_for('create_post') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i>New Vibe
+                </a>
+            </div>
+
             {% if posts %}
             <div class="row">
                 {% for post in posts %}
                 <div class="col-md-4 mb-4">
-                    <div class="card">
+                    <div class="card vibe-card h-100">
                         {% if post.image_url %}
                         <img src="{{ url_for('static', filename=post.image_url) }}" 
                              class="card-img-top" 
-                             alt="Post image"
-                             style="height: 250px; object-fit: cover;">
+                             alt="Vibe image"
+                             style="height: 200px; object-fit: cover;">
                         {% elif post.video_url %}
-                        <video class="card-img-top" style="height: 250px; object-fit: cover;">
+                        <video class="card-img-top" style="height: 200px; object-fit: cover;">
                             <source src="{{ url_for('static', filename=post.video_url) }}" type="video/mp4">
                         </video>
                         {% endif %}
@@ -50,24 +64,36 @@
                                 {% if post.caption %}
                                 {{ post.caption|truncate(50) }}
                                 {% else %}
-                                <em>No caption</em>
+                                <em class="text-muted">No caption</em>
                                 {% endif %}
                             </p>
                             <div class="d-flex justify-content-between text-muted small">
-                                <span>♥ {{ post.like_count }} likes</span>
-                                <span>💬 {{ post.comment_count }} comments</span>
+                                <span>
+                                    <i class="fas fa-rocket text-warning me-1"></i>
+                                    {{ post.like_count }} boosts
+                                </span>
+                                <span>
+                                    <i class="fas fa-comment text-primary me-1"></i>
+                                    {{ post.comment_count }}
+                                </span>
                             </div>
-                            <small class="text-muted">{{ post.created_at.strftime('%b %d, %Y') }}</small>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ post.created_at.strftime('%b %d, %Y') }}
+                            </small>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <div class="text-center py-5">
-                <h5>No posts yet</h5>
-                <p class="text-muted">Share your first moment with the world!</p>
-                <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create Your First Post</a>
+            <div class="card vibe-card text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-wind fa-3x text-muted mb-3"></i>
+                    <h5>No vibes yet</h5>
+                    <p class="text-muted">Your vibes will appear here once you start sharing</p>
+                    <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create Your First Vibe</a>
+                </div>
             </div>
             {% endif %}
         </div>
