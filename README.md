@@ -1,4 +1,4 @@
-<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/4963d057-11d0-4556-9776-f9f575cf73d0" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/2a1f0b05-b0cf-4052-aa42-e4362c48861d" /># Vibesphere 🌟
+Vibesphere 🌟
 
 A modern social media platform where users share "vibes" (posts), "boost" (like) content, and engage in "commentary" (comments). Built with Python Flask and AWS RDS.
 
