@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Auth App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Welcome, {{ username }}!</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">You have successfully logged into the application.</p>
+                <p class="card-text">Your user data is securely stored in AWS RDS.</p>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
