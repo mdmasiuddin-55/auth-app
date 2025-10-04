@@ -26,6 +26,8 @@ class Database:
         self.create_posts_table()
         self.create_likes_table()
         self.create_comments_table()
+        self.create_messages_table()
+        self.create_chat_sessions_table()
     
     def create_users_table(self):
         connection = self.get_connection()
@@ -40,6 +42,8 @@ class Database:
                     password_hash VARCHAR(255) NOT NULL,
                     profile_picture VARCHAR(255) DEFAULT NULL,
                     bio TEXT,
+                    is_online BOOLEAN DEFAULT FALSE,
+                    last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
                 """
@@ -123,6 +127,58 @@ class Database:
                 print("Comments table created successfully")
             except Error as e:
                 print(f"Error creating comments table: {e}")
+            finally:
+                cursor.close()
+                connection.close()
+    
+    def create_chat_sessions_table(self):
+        connection = self.get_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS chat_sessions (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user1_id INT NOT NULL,
+                    user2_id INT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE,
+                    UNIQUE KEY unique_chat_session (user1_id, user2_id)
+                )
+                """
+                cursor.execute(create_table_query)
+                connection.commit()
+                print("Chat sessions table created successfully")
+            except Error as e:
+                print(f"Error creating chat sessions table: {e}")
+            finally:
+                cursor.close()
+                connection.close()
+    
+    def create_messages_table(self):
+        connection = self.get_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    chat_session_id INT NOT NULL,
+                    sender_id INT NOT NULL,
+                    message_text TEXT NOT NULL,
+                    is_read BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (chat_session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE,
+                    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+                """
+                cursor.execute(create_table_query)
+                connection.commit()
+                print("Messages table created successfully")
+            except Error as e:
+                print(f"Error creating messages table: {e}")
             finally:
                 cursor.close()
                 connection.close()
