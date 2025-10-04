@@ -1,4 +1,4 @@
-# Vibesphere 🌟
+Vibesphere 🌟
 
 A modern social media platform where users share "vibes" (posts), "boost" (like) content, and engage in "commentary" (comments). Built with Python Flask and AWS RDS.
 
@@ -37,8 +37,8 @@ Before deployment, ensure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd vibesphere
+git clone https://github.com/mdmasiuddin-55/vibesphere.py.git 
+cd vibesphere.py
 ```
 
 ### 2. Set Up Virtual Environment
@@ -84,7 +84,7 @@ Create `.env` file:
 DB_HOST=your-rds-endpoint.rds.amazonaws.com
 DB_USER=your-database-username
 DB_PASSWORD=your-database-password
-DB_NAME=vibesphere_db
+DB_NAME=auth_database
 DB_PORT=3306
 
 # Flask Configuration
