@@ -1,4 +1,4 @@
-Vibesphere 🌟
+Vibesphere **🌟**
 
 A modern social media platform where users share "vibes" (posts), "boost" (like) content, and engage in "commentary" (comments). Built with Python Flask and AWS RDS.
 
